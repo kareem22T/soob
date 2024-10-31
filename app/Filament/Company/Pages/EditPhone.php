@@ -48,7 +48,7 @@ class EditPhone extends SimplePage
             ]);
 
             session()->flash('success', 'Phone changed successfully.');
-            return redirect()->route('verify.company.phone');
+            return redirect()->route('verify-company-phone');
         }
     }
 

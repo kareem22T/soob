@@ -87,7 +87,7 @@ class VerifyOtp extends SimplePage
 
     public function editPhone()
     {
-        return redirect()->route('edit.company.phone');
+        return redirect()->route('edit-company-phone');
     }
     public function goToRegister()
     {

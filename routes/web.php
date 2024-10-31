@@ -14,8 +14,8 @@ Route::get('/', function () {
 });
 
 Route::middleware([NotVerifiedScreen::class])->group(function () {
-    Route::get('/company/verify-phone', VerifyOtp::class)->name('verify.company.phone');
-    Route::get('/company/edit-phone', EditPhone::class)->name('edit.company.phone');
+    Route::get('/company/verify-phone', VerifyOtp::class)->name('verify-company-phone');
+    Route::get('/company/edit-phone', EditPhone::class)->name('edit-company-phone');
 
     Route::get('/user/verify-phone', PagesVerifyOtp::class)->name('verify.user.phone');
     Route::get('/user/edit-phone', PagesEditPhone::class)->name('edit.user.phone');
