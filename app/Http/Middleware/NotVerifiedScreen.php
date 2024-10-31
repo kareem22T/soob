@@ -16,7 +16,7 @@ class NotVerifiedScreen
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
+        $user = Auth::guard('company')->user();
 
         if ($user->is_phone_verified)
             return redirect()->to('/company');
