@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\OfferController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserCustomeRequestController;
