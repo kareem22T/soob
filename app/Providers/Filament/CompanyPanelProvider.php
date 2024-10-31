@@ -31,7 +31,7 @@ class CompanyPanelProvider extends PanelProvider
             ->login()
             ->registration(Register::class)
             ->brandLogo(asset('/imgs/logo.png'))
-            ->brandLogoHeight('100px')
+            ->brandLogoHeight('50px')
             ->brandName('SOOB')
             ->defaultThemeMode(ThemeMode::Light)
             ->colors([

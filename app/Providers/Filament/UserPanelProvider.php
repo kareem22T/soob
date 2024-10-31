@@ -30,7 +30,7 @@ class UserPanelProvider extends PanelProvider
             ->login()
             ->registration()
             ->brandLogo(asset('/imgs/logo.png'))
-            ->brandLogoHeight('100px')
+            ->brandLogoHeight('50px')
             ->brandName('SOOB')
             ->defaultThemeMode(ThemeMode::Light)
             ->colors([
