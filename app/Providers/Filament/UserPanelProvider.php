@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Http\Middleware\CheckPhoneVerifyUser;
+use App\User\Register;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -28,7 +29,7 @@ class UserPanelProvider extends PanelProvider
             ->id('user')
             ->path('user')
             ->login()
-            ->registration()
+            ->registration(Register::class)
             ->brandLogo(asset('/imgs/logo.png'))
             ->brandLogoHeight('50px')
             ->brandName('SOOB')
