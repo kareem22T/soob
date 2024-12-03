@@ -16,10 +16,15 @@ class NotVerifiedScreen
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::guard('company')->user();
+        $user = Auth::guard('employee')->user();
+        $user2 = Auth::user();
 
-        if ($user->is_phone_verified)
+        if ($user?->is_phone_verified)
             return redirect()->to('/company');
+
+        if ($user2?->is_phone_verified_for_web_registeration)
+            return redirect()->to('/user');
+
 
         return $next($request);
     }

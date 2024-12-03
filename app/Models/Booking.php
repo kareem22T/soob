@@ -41,7 +41,7 @@ class Booking extends Model
     // Custom scope to filter by the authenticated user
     public function scopeForCompany(Builder $query)
     {
-        $companyId = Auth::guard('company')?->id();
+        $companyId = Auth::guard('employee')?->id();
 
         return $query->whereNotNull('offer_id')
         ->whereHas('offer', function (Builder $offerQuery) use ($companyId) {

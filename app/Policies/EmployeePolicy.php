@@ -3,13 +3,11 @@
 namespace App\Policies;
 
 use App\Models\Admin;
-use App\Models\Booking;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Auth;
 
-class BookingPolicy
+class EmployeePolicy
 {
     use HandlesAuthorization;
 
@@ -21,17 +19,17 @@ class BookingPolicy
         if ($this->isAuth($admin) || $admin instanceof User)
             return true;
 
-        return $admin->can('view_any_booking');
+        return $admin->can('view_any_employee');
     }
 
     /**
      * Determine whether the admin can view the model.
      */
-    public function view(Admin | Employee| User $admin, Booking $booking): bool
+    public function view(Admin | Employee| User $admin, Employee $employee): bool
     {
 
 
-        return $admin->can('view_booking');
+        return $admin->can('view_employee');
     }
 
     /**
@@ -41,27 +39,27 @@ class BookingPolicy
     {
 
 
-        return $admin->can('create_booking');
+        return $admin->can('create_employee');
     }
 
     /**
      * Determine whether the admin can update the model.
      */
-    public function update(Admin | Employee| User $admin, Booking $booking): bool
+    public function update(Admin | Employee| User $admin, Employee $employee): bool
     {
 
 
-        return $admin->can('update_booking');
+        return $admin->can('update_employee');
     }
 
     /**
      * Determine whether the admin can delete the model.
      */
-    public function delete(Admin | Employee| User $admin, Booking $booking): bool
+    public function delete(Admin | Employee| User $admin, Employee $employee): bool
     {
 
 
-        return $admin->can('delete_booking');
+        return $admin->can('delete_employee');
     }
 
     /**
@@ -71,17 +69,17 @@ class BookingPolicy
     {
 
 
-        return $admin->can('delete_any_booking');
+        return $admin->can('delete_any_employee');
     }
 
     /**
      * Determine whether the admin can permanently delete.
      */
-    public function forceDelete(Admin | Employee| User $admin, Booking $booking): bool
+    public function forceDelete(Admin | Employee| User $admin, Employee $employee): bool
     {
 
 
-        return $admin->can('force_delete_booking');
+        return $admin->can('force_delete_employee');
     }
 
     /**
@@ -91,17 +89,17 @@ class BookingPolicy
     {
 
 
-        return $admin->can('force_delete_any_booking');
+        return $admin->can('force_delete_any_employee');
     }
 
     /**
      * Determine whether the admin can restore.
      */
-    public function restore(Admin | Employee| User $admin, Booking $booking): bool
+    public function restore(Admin | Employee| User $admin, Employee $employee): bool
     {
 
 
-        return $admin->can('restore_booking');
+        return $admin->can('restore_employee');
     }
 
     /**
@@ -111,17 +109,17 @@ class BookingPolicy
     {
 
 
-        return $admin->can('restore_any_booking');
+        return $admin->can('restore_any_employee');
     }
 
     /**
      * Determine whether the admin can replicate.
      */
-    public function replicate(Admin | Employee| User $admin, Booking $booking): bool
+    public function replicate(Admin | Employee| User $admin, Employee $employee): bool
     {
 
 
-        return $admin->can('replicate_booking');
+        return $admin->can('replicate_employee');
     }
 
     /**
@@ -131,7 +129,7 @@ class BookingPolicy
     {
 
 
-        return $admin->can('reorder_booking');
+        return $admin->can('reorder_employee');
     }
 
     public function __call($method, $arguments)
@@ -145,11 +143,11 @@ class BookingPolicy
         return call_user_func_array([$this, $method], $arguments);
     }
 
-    public function isAuth($admin): bool
-    {
+    public function isAuth($admin): bool {
         if ($admin instanceof Employee && $admin->member_role == "SEO")
             return true;
 
         return false;
     }
+
 }

@@ -18,3 +18,44 @@
 .fi-logo {
     height: 50px !important;
 }
+
+#employee_register_form {
+    box-shadow: none !important;
+}
+
+#employee_register_form > .fi-section-content-ctn >.fi-section-content {
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: none;
+    border: none;
+}
+#employee_register_form > .fi-section-content-ctn{
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: none;
+    border: none;
+}
+
+#company-data {
+    box-shadow: none !important;
+}
+
+#company-data > .fi-section-header  {
+    padding: 0 0 16px;
+}
+
+#company-data .fi-section-content {
+    padding: 20px 0 0;
+}
+
+#account-data {
+    box-shadow: none !important;
+}
+
+#account-data > .fi-section-header  {
+    padding: 0 0 16px;
+}
+
+#account-data .fi-section-content {
+    padding: 20px 0 0;
+}

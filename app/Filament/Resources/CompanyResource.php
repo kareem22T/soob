@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
+use App\Filament\Resources\CompanyResource\RelationManagers\EmployeesRelationManager;
 use App\Models\Company;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -59,8 +60,6 @@ class CompanyResource extends Resource
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_approved')
                     ->boolean(),
-                Tables\Columns\IconColumn::make('is_phone_verified')
-                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -83,7 +82,7 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EmployeesRelationManager::class
         ];
     }
 

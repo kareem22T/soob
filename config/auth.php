@@ -44,9 +44,9 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
-        'company' => [
+        'employee' => [
             'driver' => 'session',
-            'provider' => 'companies',
+            'provider' => 'employees',
         ],
         'api' => [
             'driver' => 'sanctum',
@@ -83,9 +83,9 @@ return [
             'model' => env('AUTH_MODEL', App\Models\Admin::class),
         ],
 
-        'companies' => [
+        'employees' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Company::class),
+            'model' => env('AUTH_MODEL', App\Models\Employee::class),
         ],
 
         // 'users' => [

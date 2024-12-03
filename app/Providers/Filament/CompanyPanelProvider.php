@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Company\Register;
 use App\Http\Middleware\Company\CheckCompanyPhoneVerificationAndApproved;
+use App\Http\Middleware\CustomVerifyCsrfToken;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -52,15 +53,19 @@ class CompanyPanelProvider extends PanelProvider
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
+                CustomVerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authGuard('company')
+            ->authGuard('employee')
             ->authMiddleware([
                 Authenticate::class,
                 CheckCompanyPhoneVerificationAndApproved::class
+            ])
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ]);
+
     }
 }

@@ -8,7 +8,7 @@
         @endif
 
         <form wire:submit.prevent="submitOtp" class="space-y-4 bg-white rounded-lg shadow-md">
-            {{-- <h2 class="text-xl font-semibold text-gray-800 text-center">We have sent you OTP to your phone <strong style="font-size: 27px;margin-top: 13px;display: block;">{{ Auth::guard('company')->user()->phone }}</strong></h2> --}}
+            {{-- <h2 class="text-xl font-semibold text-gray-800 text-center">We have sent you OTP to your phone <strong style="font-size: 27px;margin-top: 13px;display: block;">{{ Auth::guard('employee')->user()->phone }}</strong></h2> --}}
             <button wire:click="editPhone" style="background: #353535;padding: 8px 16px;border-radius: 10px;color: #fff;font-weight: 700;margin: 32px auto 24px;display: block;">Edit Phone</button>
             <div>
                 <label for="otp" class="block text-gray-700">Enter OTP</label>

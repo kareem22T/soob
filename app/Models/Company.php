@@ -22,13 +22,11 @@ class Company extends Authenticatable
         'email',
         'phone',
         'license',
-        'is_phone_verified',
         'is_approved',
-        'password',
-        'verification_code',
-        'current_code_expired_at',
-        'is_rejected',
-        'rejection_reason',
     ];
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
 
 }

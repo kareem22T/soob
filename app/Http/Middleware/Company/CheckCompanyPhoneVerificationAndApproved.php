@@ -17,12 +17,12 @@ class CheckCompanyPhoneVerificationAndApproved
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::guard('company')->user();
+        $user = Auth::guard('employee')->user();
 
         if (!$user->is_phone_verified)
             return redirect()->route('verify-company-phone');
 
-        if (!$user->is_approved)
+        if (!$user->company->is_approved)
             return redirect()->route('pending.account');
 
 

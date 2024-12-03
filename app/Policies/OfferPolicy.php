@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Admin;
-use App\Models\Company;
+use App\Models\Employee;
 use App\Models\Offer;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -15,9 +15,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can view any models.
      */
-    public function viewAny(Admin | Company | User $admin): bool
+    public function viewAny(Admin | Employee| User $admin): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
+        if ($this->isAuth($admin) || $admin instanceof User)
             return true;
 
         return $admin->can('view_any_offer');
@@ -26,10 +26,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can view the model.
      */
-    public function view(Admin | Company | User $admin, Offer $offer): bool
+    public function view(Admin | Employee| User $admin, Offer $offer): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('view_offer');
     }
@@ -37,10 +36,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can create models.
      */
-    public function create(Admin | Company | User $admin): bool
+    public function create(Admin | Employee| User $admin): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('create_offer');
     }
@@ -48,10 +46,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can update the model.
      */
-    public function update(Admin | Company | User $admin, Offer $offer): bool
+    public function update(Admin | Employee| User $admin, Offer $offer): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('update_offer');
     }
@@ -59,10 +56,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can delete the model.
      */
-    public function delete(Admin | Company | User $admin, Offer $offer): bool
+    public function delete(Admin | Employee| User $admin, Offer $offer): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('delete_offer');
     }
@@ -70,10 +66,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can bulk delete.
      */
-    public function deleteAny(Admin | Company | User $admin): bool
+    public function deleteAny(Admin | Employee| User $admin): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('delete_any_offer');
     }
@@ -81,10 +76,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can permanently delete.
      */
-    public function forceDelete(Admin | Company | User $admin, Offer $offer): bool
+    public function forceDelete(Admin | Employee| User $admin, Offer $offer): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('force_delete_offer');
     }
@@ -92,10 +86,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can permanently bulk delete.
      */
-    public function forceDeleteAny(Admin | Company | User $admin): bool
+    public function forceDeleteAny(Admin | Employee| User $admin): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('force_delete_any_offer');
     }
@@ -103,10 +96,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can restore.
      */
-    public function restore(Admin | Company | User $admin, Offer $offer): bool
+    public function restore(Admin | Employee| User $admin, Offer $offer): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('restore_offer');
     }
@@ -114,10 +106,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can bulk restore.
      */
-    public function restoreAny(Admin | Company | User $admin): bool
+    public function restoreAny(Admin | Employee| User $admin): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('restore_any_offer');
     }
@@ -125,10 +116,9 @@ class OfferPolicy
     /**
      * Determine whether the admin can replicate.
      */
-    public function replicate(Admin | Company | User $admin, Offer $offer): bool
+    public function replicate(Admin | Employee| User $admin, Offer $offer): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('replicate_offer');
     }
@@ -136,11 +126,29 @@ class OfferPolicy
     /**
      * Determine whether the admin can reorder.
      */
-    public function reorder(Admin | Company | User $admin): bool
+    public function reorder(Admin | Employee| User $admin): bool
     {
-        if ($admin instanceof Company || $admin instanceof User)
-        return true;
+
 
         return $admin->can('reorder_offer');
     }
+
+    public function __call($method, $arguments)
+    {
+        // Force return true if isAuth is true
+        if ($this->isAuth($arguments)) {
+            return true;
+        }
+
+        // If not forced, call the actual method
+        return call_user_func_array([$this, $method], $arguments);
+    }
+
+    public function isAuth($admin): bool {
+        if ($admin instanceof Employee && $admin->member_role == "SEO")
+            return true;
+
+        return false;
+    }
+
 }

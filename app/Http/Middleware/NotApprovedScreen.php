@@ -16,9 +16,9 @@ class NotApprovedScreen
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::guard('company')->user();
+        $user = Auth::guard('employee')->user();
 
-        if ($user->is_approved)
+        if ($user->company->is_approved)
             return redirect()->to('/company');
 
         return $next($request);

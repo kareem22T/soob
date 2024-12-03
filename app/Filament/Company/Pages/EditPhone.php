@@ -17,7 +17,7 @@ class EditPhone extends SimplePage
 
     public function mount()
     {
-        $this->phone = Auth::guard('company')->user()->phone;
+        $this->phone = Auth::guard('employee')->user()->phone;
 
         session()->flash('error', '');
     }
@@ -40,7 +40,7 @@ class EditPhone extends SimplePage
             return back(); // Redirect back to the same page
         }
 
-        $user = Auth::guard('company')->user();
+        $user = Auth::guard('employee')->user();
 
         if ($user) {
             $user->update([

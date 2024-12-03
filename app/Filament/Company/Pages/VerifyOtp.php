@@ -22,14 +22,14 @@ class VerifyOtp extends SimplePage
 
     public function mount()
     {
-        $this->phone = Auth::guard('company')->user()->phone;
+        $this->phone = Auth::guard('employee')->user()->phone;
         $this->sendOtp();
     }
 
     public function sendOtp()
     {
         try {
-            $user = Auth::guard('company')->user();
+            $user = Auth::guard('employee')->user();
 
             // Sending SMS via service
             $verificationCode = rand(100000, 999999);
@@ -59,7 +59,7 @@ class VerifyOtp extends SimplePage
         if (!$this->otp)
             session()->flash('error', 'Please enter the OTP');
 
-        $user = Auth::guard('company')->user();
+        $user = Auth::guard('employee')->user();
 
         if (Carbon::now()->greaterThan($user->current_code_expired_at)) {
             session()->flash('error', 'OTP has expired. Please request a new one.');

@@ -19,3 +19,7 @@
 .fi-logo {
     height: 50px !important;
 }
+
+#employee_register_form .fi-section-content {
+    padding: 0 !important;
+}

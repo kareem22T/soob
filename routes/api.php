@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
+use App\Http\Controllers\API\CompanyRegistrationController;
 use App\Http\Controllers\API\OfferController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserCustomeRequestController;
@@ -13,6 +14,12 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::post('/register-company', [CompanyRegistrationController::class, 'register']);
+Route::post('/login-company', [CompanyRegistrationController::class, 'login']);
+Route::post('/change-phone-company', [CompanyRegistrationController::class, 'updatePhone'])->middleware('auth:sanctum');
+Route::get('/user-company', [CompanyRegistrationController::class, 'getUser'])->middleware('auth:sanctum');
+Route::get('/send-otp-company', [CompanyRegistrationController::class, 'sendOtp'])->middleware('auth:sanctum');
+Route::post('/verify-otp-company', [CompanyRegistrationController::class, 'verifyOtp'])->middleware('auth:sanctum');
 
 // Route to send OTP
 Route::post('/send-otp', [AuthController::class, 'sendOtp']);
