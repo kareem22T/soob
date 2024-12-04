@@ -199,12 +199,12 @@ class Role extends Model implements RoleContract
 
         // Global scope to restrict queries based on company_id for employees
         static::addGlobalScope('excludeZeroUserId', function (Builder $builder) {
-            if (auth('employee')->check()) {
-                $builder->where('company_id', auth('employee')->user()->company_id);
-            }
-            if (auth('admin')->check()) {
-                $builder->whereNot('company_id');
-            }
+            // if (auth('employee')->check()) {
+            //     $builder->where('company_id', auth('employee')->user()->company_id);
+            // }
+            // if (auth('admin')->check()) {
+            //     $builder->whereNot('company_id');
+            // }
         });
 
         // Set company_id automatically if created by an employee
