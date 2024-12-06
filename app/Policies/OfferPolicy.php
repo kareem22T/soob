@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\Admin;
 use App\Models\Offer;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Database\Eloquent\Model;
 
 class OfferPolicy
 {
@@ -13,7 +13,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can view any models.
      */
-    public function viewAny(Admin $admin): bool
+    public function viewAny(Model $admin): bool
     {
         return $admin->can('view_any_offer');
     }
@@ -21,7 +21,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can view the model.
      */
-    public function view(Admin $admin, Offer $offer): bool
+    public function view(Model $admin, Offer $offer): bool
     {
         return $admin->can('view_offer');
     }
@@ -29,7 +29,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can create models.
      */
-    public function create(Admin $admin): bool
+    public function create(Model $admin): bool
     {
         return $admin->can('create_offer');
     }
@@ -37,7 +37,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can update the model.
      */
-    public function update(Admin $admin, Offer $offer): bool
+    public function update(Model $admin, Offer $offer): bool
     {
         return $admin->can('update_offer');
     }
@@ -45,7 +45,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can delete the model.
      */
-    public function delete(Admin $admin, Offer $offer): bool
+    public function delete(Model $admin, Offer $offer): bool
     {
         return $admin->can('delete_offer');
     }
@@ -53,7 +53,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can bulk delete.
      */
-    public function deleteAny(Admin $admin): bool
+    public function deleteAny(Model $admin): bool
     {
         return $admin->can('delete_any_offer');
     }
@@ -61,7 +61,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can permanently delete.
      */
-    public function forceDelete(Admin $admin, Offer $offer): bool
+    public function forceDelete(Model $admin, Offer $offer): bool
     {
         return $admin->can('force_delete_offer');
     }
@@ -69,7 +69,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can permanently bulk delete.
      */
-    public function forceDeleteAny(Admin $admin): bool
+    public function forceDeleteAny(Model $admin): bool
     {
         return $admin->can('force_delete_any_offer');
     }
@@ -77,7 +77,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can restore.
      */
-    public function restore(Admin $admin, Offer $offer): bool
+    public function restore(Model $admin, Offer $offer): bool
     {
         return $admin->can('restore_offer');
     }
@@ -85,7 +85,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can bulk restore.
      */
-    public function restoreAny(Admin $admin): bool
+    public function restoreAny(Model $admin): bool
     {
         return $admin->can('restore_any_offer');
     }
@@ -93,7 +93,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can replicate.
      */
-    public function replicate(Admin $admin, Offer $offer): bool
+    public function replicate(Model $admin, Offer $offer): bool
     {
         return $admin->can('replicate_offer');
     }
@@ -101,7 +101,7 @@ class OfferPolicy
     /**
      * Determine whether the admin can reorder.
      */
-    public function reorder(Admin $admin): bool
+    public function reorder(Model $admin): bool
     {
         return $admin->can('reorder_offer');
     }

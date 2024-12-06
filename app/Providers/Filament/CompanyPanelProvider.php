@@ -62,9 +62,6 @@ class CompanyPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 CheckCompanyPhoneVerificationAndApproved::class
-            ])
-            ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ]);
 
     }

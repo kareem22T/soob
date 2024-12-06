@@ -2,9 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Admin;
 use App\Models\Booking;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class BookingPolicy
 {
@@ -13,7 +14,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can view any models.
      */
-    public function viewAny(Admin $admin): bool
+    public function viewAny(Model $admin): bool
     {
         return $admin->can('view_any_booking');
     }
@@ -21,7 +22,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can view the model.
      */
-    public function view(Admin $admin, Booking $booking): bool
+    public function view(Model $admin, Booking $booking): bool
     {
         return $admin->can('view_booking');
     }
@@ -29,7 +30,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can create models.
      */
-    public function create(Admin $admin): bool
+    public function create(Model $admin): bool
     {
         return $admin->can('create_booking');
     }
@@ -37,7 +38,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can update the model.
      */
-    public function update(Admin $admin, Booking $booking): bool
+    public function update(Model $admin, Booking $booking): bool
     {
         return $admin->can('update_booking');
     }
@@ -45,7 +46,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can delete the model.
      */
-    public function delete(Admin $admin, Booking $booking): bool
+    public function delete(Model $admin, Booking $booking): bool
     {
         return $admin->can('delete_booking');
     }
@@ -53,7 +54,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can bulk delete.
      */
-    public function deleteAny(Admin $admin): bool
+    public function deleteAny(Model $admin): bool
     {
         return $admin->can('delete_any_booking');
     }
@@ -61,7 +62,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can permanently delete.
      */
-    public function forceDelete(Admin $admin, Booking $booking): bool
+    public function forceDelete(Model $admin, Booking $booking): bool
     {
         return $admin->can('force_delete_booking');
     }
@@ -69,7 +70,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can permanently bulk delete.
      */
-    public function forceDeleteAny(Admin $admin): bool
+    public function forceDeleteAny(Model $admin): bool
     {
         return $admin->can('force_delete_any_booking');
     }
@@ -77,7 +78,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can restore.
      */
-    public function restore(Admin $admin, Booking $booking): bool
+    public function restore(Model $admin, Booking $booking): bool
     {
         return $admin->can('restore_booking');
     }
@@ -85,7 +86,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can bulk restore.
      */
-    public function restoreAny(Admin $admin): bool
+    public function restoreAny(Model $admin): bool
     {
         return $admin->can('restore_any_booking');
     }
@@ -93,7 +94,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can replicate.
      */
-    public function replicate(Admin $admin, Booking $booking): bool
+    public function replicate(Model $admin, Booking $booking): bool
     {
         return $admin->can('replicate_booking');
     }
@@ -101,7 +102,7 @@ class BookingPolicy
     /**
      * Determine whether the admin can reorder.
      */
-    public function reorder(Admin $admin): bool
+    public function reorder(Model $admin): bool
     {
         return $admin->can('reorder_booking');
     }

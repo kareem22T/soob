@@ -20,6 +20,7 @@ Route::post('/change-phone-company', [CompanyRegistrationController::class, 'upd
 Route::get('/user-company', [CompanyRegistrationController::class, 'getUser'])->middleware('auth:sanctum');
 Route::get('/send-otp-company', [CompanyRegistrationController::class, 'sendOtp'])->middleware('auth:sanctum');
 Route::post('/verify-otp-company', [CompanyRegistrationController::class, 'verifyOtp'])->middleware('auth:sanctum');
+Route::post('/store-offer', [OfferController::class, 'store'])->middleware('auth:sanctum');
 
 // Route to send OTP
 Route::post('/send-otp', [AuthController::class, 'sendOtp']);
@@ -52,3 +53,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/offers', [OfferController::class, 'getOffers']); // Retrieve bookings for the authenticated user
+Route::get('/company-offers', [OfferController::class, 'getOffers'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user

@@ -95,6 +95,13 @@ class OfferResource extends Resource
                 Tables\Columns\TextColumn::make('end_date')
                     ->dateTime()
                     ->sortable(),
+                    Tables\Columns\SelectColumn::make('status')
+                    ->options([
+                        'Pending' => 'Pending',
+                        'Approved' => 'Approved',
+                        'Rejected' => 'Rejected',
+                    ]),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -104,14 +111,8 @@ class OfferResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
@@ -126,9 +127,6 @@ class OfferResource extends Resource
     {
         return [
             'index' => ListOffers::route('/'),
-            'create' => CreateOffer::route('/create'),
-            'view' => ViewOffer::route('/{record}'),
-            'edit' => EditOffer::route('/{record}/edit'),
         ];
     }
 }

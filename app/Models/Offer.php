@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Offer extends Model
 {
-    protected $fillable = ['title', 'description', 'images', 'company_id', 'start_date', 'end_date'];
+    protected $fillable = ['title', 'description', 'images', 'company_id', 'start_date', 'end_date', 'status'];
 
     protected $casts = ['images'=> 'array'];
 
@@ -23,7 +23,7 @@ class Offer extends Model
     }
     public function scopeForCompany(Builder $query)
     {
-        return $query->where('company_id', Auth::id());
+        return $query->where('company_id', Auth::user()->company_id);
     }
     public function bookings()
     {

@@ -48,7 +48,7 @@ class AdminResource extends Resource
                     ->default(null)
                     ->inlineSuffix(),
                 Forms\Components\Select::make('roles')
-                ->relationship('roles', 'name')
+                ->relationship('roles', 'name', fn (Builder $query) => $query->where('guard_name', 'admin')->where('name', '!=', 'panel_user'))
                 ->multiple()
                 ->preload()
                 ->searchable()

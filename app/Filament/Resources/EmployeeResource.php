@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Company\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\Company\Resources\EmployeeResource\Pages;
-use App\Filament\Company\Resources\EmployeeResource\RelationManagers;
+use App\Filament\Resources\EmployeeResource\Pages;
+use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Models\Employee;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -38,18 +38,24 @@ class EmployeeResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('roles')
-                ->relationship('roles', 'name', fn (Builder $query) => $query->where('guard_name', 'employee')->where('name', '!=', 'panel_user'))
-                ->multiple()
-                ->preload()
-                ->searchable(),
+                Forms\Components\Toggle::make('is_phone_verified')
+                    ->required(),
+                Forms\Components\TextInput::make('verification_code')
+                    ->maxLength(255)
+                    ->default(null),
+                Forms\Components\DateTimePicker::make('current_code_expired_at'),
+                Forms\Components\TextInput::make('member_role')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('company_id')
+                    ->required()
+                    ->numeric(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->forCompany())
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -57,8 +63,26 @@ class EmployeeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('roles.name')
-                ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('is_phone_verified')
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('verification_code')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('current_code_expired_at')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('member_role')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('company_id')
+                    ->numeric()
+                    ->sortable(),
             ])
             ->filters([
                 //
