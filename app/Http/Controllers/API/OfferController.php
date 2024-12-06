@@ -32,7 +32,7 @@ public function getOffers(Request $request)
     }
 
     // Start building the query
-    $query = Offer::with('packages');
+    $query = Offer::latest()->with('packages');
 
     // Check if the user is an Employee
     if ($request->user() && $request->user() instanceof Employee) {

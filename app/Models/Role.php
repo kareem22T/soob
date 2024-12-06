@@ -192,6 +192,16 @@ class Role extends Model implements RoleContract
         return $this->permissions->contains($permission->getKeyName(), $permission->getKey());
     }
 
+    protected static function boot(): void
+    {
+        parent::boot();
 
+        static::addGlobalScope('scopeForCurrentGuard', function (Builder $builder) {
+            // Only apply this scope if the user is not an admin
+            if (auth()->guard('admin')->check()) {
+                return $builder->where('guard_name', 'admin');
+            }
+            });
+    }
 
 }
