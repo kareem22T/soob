@@ -70,6 +70,7 @@ class UserCustomeRequestsResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'pending'))
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                 ->sortable(),

@@ -20,7 +20,10 @@ class UserCustomeRequests extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    public function offers()
+    {
+        return $this->hasMany(RequestOffers::class, 'request_id');
+    }
     public function scopeForUser(Builder $query)
     {
         return $query->where('user_id', Auth::id());

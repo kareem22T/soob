@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Role;
 use App\Services\ForJawalyService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Permission;
 
 class CompanyRegistrationController extends Controller
 {
@@ -95,6 +97,44 @@ class CompanyRegistrationController extends Controller
                 'member_role' => 'SEO',
                 'password' => Hash::make($request->password),
             ]);
+
+                    // Define resources
+        $resources = ['booking', 'employee', 'offer', 'role', 'user_custom_request'];
+
+        // Permissions to generate for each resource
+        $permissionActions = [
+            'view_any',
+            'view',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'force_delete',
+            'force_delete_any',
+            'restore',
+            'restore_any',
+            'replicate',
+            'reorder',
+        ];
+
+        // Create roles and permissions for each resource
+        foreach ($resources as $resource) {
+            // Create a role for the resource
+            $roleName = ucfirst($resource) . ' Manager';
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'employee']);
+
+            // Create permissions for the resource
+            foreach ($permissionActions as $action) {
+                $permissionName = "{$action}_{$resource}";
+                $permission = Permission::updateOrCreate(['name' => $permissionName, 'guard_name' => 'employee']);
+
+                // Assign permissions to the role
+                $role->givePermissionTo($permission);
+            }
+
+            // Assign the role to the employee
+            $employee->assignRole($role);
+        }
 
             $employee->is_approved = $company->is_approved;
 

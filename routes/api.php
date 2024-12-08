@@ -1,7 +1,10 @@
 <?php
 
+use App\Events\MyEvent;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
+use App\Http\Controllers\API\ChatController;
+use App\Http\Controllers\API\Company\RequestsController;
 use App\Http\Controllers\API\CompanyRegistrationController;
 use App\Http\Controllers\API\OfferController;
 use App\Http\Controllers\API\UserController;
@@ -21,6 +24,25 @@ Route::get('/user-company', [CompanyRegistrationController::class, 'getUser'])->
 Route::get('/send-otp-company', [CompanyRegistrationController::class, 'sendOtp'])->middleware('auth:sanctum');
 Route::post('/verify-otp-company', [CompanyRegistrationController::class, 'verifyOtp'])->middleware('auth:sanctum');
 Route::post('/store-offer', [OfferController::class, 'store'])->middleware('auth:sanctum');
+Route::get('/company/get-requests', [RequestsController::class, 'get']);
+Route::post('/test-msg-new', [RequestsController::class, 'test']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    // Send message by employee
+    Route::post('/chat/send-by-employee', [ChatController::class, 'sendMessageByEmployee']);
+
+    // Send message by user
+    Route::post('/chat/send-by-user', [ChatController::class, 'sendMessageByUser']);
+
+    // Get chats for user or employee
+    Route::get('/chat', [ChatController::class, 'getChats']);
+
+    // Add an offer to a custom request
+    Route::post('/chat/add-offer', [ChatController::class, 'addOffer']);
+
+    // Get chat messages
+    Route::get('/chat/{chatId}/messages', [ChatController::class, 'getChatMessages']);
+});
 
 // Route to send OTP
 Route::post('/send-otp', [AuthController::class, 'sendOtp']);
