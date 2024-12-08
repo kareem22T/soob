@@ -13,7 +13,7 @@ use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasPanelShield, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
