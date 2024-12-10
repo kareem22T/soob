@@ -23,7 +23,6 @@ class Message extends Model
 
     public function offer()
     {
-        return $this->belongsTo(RequestOffers::class, 'msg_reference_id')
-            ->where('msg_type', 'offer');
+        return $this->belongsTo(RequestOffers::class, 'msg_reference_id');
     }
 }

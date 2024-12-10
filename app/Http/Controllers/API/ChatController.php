@@ -162,7 +162,7 @@ class ChatController extends Controller
         ]);
 
         $message = Message::create([
-            'msg' => 'New offer added',
+            'msg' => 'تم اضافة عرض',
             'sender_id' => $request->user()->id,
             'sender_type' => 'employee',
             'msg_type' => 'offer',
@@ -203,7 +203,7 @@ class ChatController extends Controller
         }
 
         // Retrieve messages
-        $messages = Message::where('chat_id', $chatId)->orderBy('created_at', 'asc')->get();
+        $messages = Message::with('offer')->where('chat_id', $chatId)->orderBy('created_at', 'asc')->get();
 
         // Mark unseen messages as seen
         Message::where('chat_id', $chatId)
@@ -224,12 +224,13 @@ class ChatController extends Controller
         $pusher = new Pusher('85d8aefb7b8d34dc9f17', '6bbcf1310effc32ad569', '1907839', ['cluster' => 'eu']);
 
         $pusher->trigger(
-            "chat_{$receiverType}_{$chatId}",
+            "event_{$receiverType}_{$chatId}",
             "new-message",
             [
                 'type' => $receiverType,
                 'id' => $receiverId,
-                'message' => $message
+                'message' => $message,
+                'event_type' => 'chat',
             ]
         );
     }

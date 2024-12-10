@@ -6,6 +6,7 @@ use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\Company\RequestsController;
 use App\Http\Controllers\API\CompanyRegistrationController;
+use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\OfferController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserCustomeRequestController;
@@ -75,4 +76,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/offers', [OfferController::class, 'getOffers']); // Retrieve bookings for the authenticated user
+Route::get('/getNotification', [NotificationController::class, 'getNotification'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
+Route::get('/readAll', [NotificationController::class, 'readAll'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
 Route::get('/company-offers', [OfferController::class, 'getOffers'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
