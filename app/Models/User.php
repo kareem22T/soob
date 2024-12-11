@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
+        'photo',
         'password',
         'verification_code',
         'current_code_expired_at',
