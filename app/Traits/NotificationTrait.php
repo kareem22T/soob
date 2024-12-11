@@ -16,7 +16,7 @@ trait NotificationTrait
      * @param string $receiverType (e.g., 'user', 'employee')
      * @param int $receiverId
      */
-    public function sendNotification(string $title, string $body,  string $status, ?int $referenceId, string $receiverType, int $receiverId)
+    public function sendNotification(string $title, string $body,  string $status, ?int $referenceId, string $receiverType, int $receiverId, string $event_type = 'notification')
     {
         // Create the notification payload
         $notification = [
@@ -26,7 +26,7 @@ trait NotificationTrait
             'reference_id' => $referenceId,
             'receiver_type' => $receiverType,
             'receiver_id' => $receiverId,
-            'event_type' => 'notification',
+            'event_type' => $event_type,
         ];
 
         Notification::create(
