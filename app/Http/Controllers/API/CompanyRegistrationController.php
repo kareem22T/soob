@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Phone;
 use App\Models\Role;
 use App\Services\ForJawalyService;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Validation\Rule;
 
 class CompanyRegistrationController extends Controller
 {
@@ -96,6 +98,7 @@ class CompanyRegistrationController extends Controller
                 'email' => $request->member_email,
                 'member_role' => 'SEO',
                 'password' => Hash::make($request->password),
+                'is_phone_verified' => true
             ]);
 
                     // Define resources
@@ -251,7 +254,12 @@ class CompanyRegistrationController extends Controller
         try {
             // Validate request
             $validator = Validator::make($request->all(), [
-                'phone' => 'required|string|max:15|exists:employees,phone',
+                'from_forgot' => 'nullable',
+                'phone' => [
+                    'required',
+                    'string',
+                    'max:15',
+                ],
             ], [
                 'phone.required' => 'رقم الهاتف مطلوب.',
                 'phone.string' => 'رقم الهاتف يجب أن يكون نصاً.',
@@ -266,27 +274,39 @@ class CompanyRegistrationController extends Controller
                 ], 422);
             }
 
-            // Fetch the user associated with the phone
-            $employee = Employee::where('phone', $request->phone)->first();
+            $from_forgot = $request->get('from_forgot', false);
 
-            if (!$employee) {
-                return response()->json([
-                    'status' => 'error',
-                    'errors' => ['المستخدم غير موجود.'],
-                ], 404);
+            if ($from_forgot) {
+                $employee = Employee::where('phone', $request->phone)->first();
+                if (!$employee)
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => ['لا يوجد حساب بهاذا الرقم'],
+                    ], 422);
+            } else {
+                $employee = Employee::where('phone', $request->phone)->first();
+                if ($employee)
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => ['هذا الرقم مستخدم من قبل'],
+                    ], 422);
             }
 
             // Generate OTP and expiration
-            $verificationCode = rand(100000, 999999);
+            $verificationCode = rand(1000, 9999);
             $expirationTime = Carbon::now()->addMinutes(10);
 
             // Update user with OTP and expiration
-            $employee->update([
-                'verification_code' => Hash::make($verificationCode),
-                'current_code_expired_at' => $expirationTime,
-            ]);
+            $phoneRecord = Phone::updateOrCreate(
+                ['phone' => $request->phone],
+                [
+                    'verification_code' => Hash::make($verificationCode),
+                    'verified_at' => null,
+                    'current_code_expired_at' => $expirationTime,
+                ]
+            );
 
-            // Send OTP via SMS
+                // Send OTP via SMS
             $result = ForJawalyService::sendSMS($request->phone, "Your Soob account verification code is: {$verificationCode}");
 
             if ($result['code'] === 200) {
@@ -316,8 +336,9 @@ class CompanyRegistrationController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'phone' => 'required|string|max:15|exists:employees,phone',
+                'phone' => 'required|string|max:15',
                 'otp' => 'required',
+                'from_forgot' => 'nullable',
             ], [
                 'phone.required' => 'رقم الهاتف مطلوب.',
                 'phone.exists' => 'رقم الهاتف غير موجود.',
@@ -333,7 +354,28 @@ class CompanyRegistrationController extends Controller
                 ], 422);
             }
 
-            $employee = Employee::where('phone', $request->phone)->first();
+            $from_forgot = $request->get('from_forgot', false);
+            $token = null;
+
+            if ($from_forgot) {
+                $employee = Employee::where('phone', $request->phone)->first();
+                if (!$employee)
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => ['لا يوجد حساب بهاذا الرقم'],
+                    ], 422);
+
+                $token = $employee->createToken('EmployeeToken')->plainTextToken;
+            } else {
+                $employee = Employee::where('phone', $request->phone)->first();
+                if ($employee)
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => ['هذا الرقم مستخدم من قبل'],
+                    ], 422);
+            }
+
+            $employee = Phone::where('phone', $request->phone)->first();
 
             if (!$employee || !Hash::check($request->otp, $employee->verification_code)) {
                 return response()->json([
@@ -352,20 +394,15 @@ class CompanyRegistrationController extends Controller
 
             // OTP verified successfully
             $employee->update([
-                'is_phone_verified' => 1,
+                'verified_at' => now(),
                 'verification_code' => null,
                 'current_code_expired_at' => null,
             ]);
 
-            $token = $employee->createToken('EmployeeToken')->plainTextToken;
-            $company = Company::find($employee->company_id);
-            $employee->is_approved = $company->is_approved;
-
             return response()->json([
                 'status' => 'success',
-                'message' => 'تم التحقق بنجاح.',
                 'token' => $token,
-                'employee' => $employee,
+                'message' => 'تم التحقق بنجاح.',
             ], 200);
 
         } catch (\Exception $e) {
@@ -388,4 +425,55 @@ class CompanyRegistrationController extends Controller
             'employee' => $employee,
         ], 200);
     }
+
+    public function resetPassword(Request $request)
+{
+    try {
+        // Validate the request input
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'phone.required' => 'رقم الهاتف مطلوب.',
+            'phone.string' => 'رقم الهاتف يجب أن يكون نصاً.',
+            'phone.max' => 'رقم الهاتف يجب ألا يزيد عن 15 حرفًا.',
+            'phone.exists' => 'رقم الهاتف غير موجود في السجلات.',
+
+            'otp.required' => 'رمز التحقق مطلوب.',
+            'otp.integer' => 'رمز التحقق يجب أن يكون رقمًا صحيحًا.',
+
+            'password.required' => 'كلمة المرور مطلوبة.',
+            'password.string' => 'كلمة المرور يجب أن تكون نصاً.',
+            'password.min' => 'كلمة المرور يجب ألا تقل عن 8 أحرف.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => [$validator->errors()->first()],
+            ], 422);
+        }
+
+        // Fetch the employee by phone number
+        $employee = $request->user();
+
+        // Update the employee's password
+        $employee->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم إعادة تعيين كلمة المرور بنجاح.',
+        ], 200);
+
+    } catch (\Throwable $th) {
+        Log::error('Error in resetPassword: ' . $th->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'حدث خطأ أثناء إعادة تعيين كلمة المرور.',
+        ], 500);
+    }
+}
+
 }

@@ -32,7 +32,7 @@ class VerifyOtp extends SimplePage
             $user = Auth::user();
 
             // Sending SMS via service
-            $verificationCode = rand(100000, 999999);
+            $verificationCode = rand(1000, 9999);
 
             $expirationTime = Carbon::now()->addMinutes(10);
 

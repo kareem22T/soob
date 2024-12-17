@@ -22,8 +22,9 @@ Route::post('/register-company', [CompanyRegistrationController::class, 'registe
 Route::post('/login-company', [CompanyRegistrationController::class, 'login']);
 Route::post('/change-phone-company', [CompanyRegistrationController::class, 'updatePhone'])->middleware('auth:sanctum');
 Route::get('/user-company', [CompanyRegistrationController::class, 'getUser'])->middleware('auth:sanctum');
-Route::get('/send-otp-company', [CompanyRegistrationController::class, 'sendOtp'])->middleware('auth:sanctum');
-Route::post('/verify-otp-company', [CompanyRegistrationController::class, 'verifyOtp'])->middleware('auth:sanctum');
+Route::get('/send-otp-company', [CompanyRegistrationController::class, 'sendOtp']);
+Route::post('/verify-otp-company', [CompanyRegistrationController::class, 'verifyOtp']);
+Route::post('/reset-password-company', [CompanyRegistrationController::class, 'resetPassword'])->middleware('auth:sanctum');
 Route::post('/store-offer', [OfferController::class, 'store'])->middleware('auth:sanctum');
 Route::get('/company/get-requests', [RequestsController::class, 'get']);
 Route::post('/test-msg-new', [RequestsController::class, 'test']);

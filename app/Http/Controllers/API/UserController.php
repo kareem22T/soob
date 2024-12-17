@@ -90,4 +90,5 @@ class UserController extends Controller
         $request->user()->currentAccessToken()->delete(); // Delete access token
         return response()->json(['success' => true, 'message' => 'User logged out successfully.'], 200);
     }
+
 }

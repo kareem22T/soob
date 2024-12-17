@@ -36,7 +36,7 @@ class AuthController extends Controller
         }
 
         $phone = $request->phone;
-        $verificationCode = rand(100000, 999999);
+        $verificationCode = rand(1000, 9999);
         $expirationTime = Carbon::now()->addMinutes(10);
 
         // Check if the phone exists, then update or create a new phone record
