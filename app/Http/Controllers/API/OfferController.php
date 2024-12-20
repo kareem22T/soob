@@ -81,6 +81,7 @@ public function getOffers(Request $request)
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
+                'category_id' => 'required',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'images' => 'required|array',
@@ -132,6 +133,7 @@ public function getOffers(Request $request)
             $offer = new Offer();
             $offer->company_id = $request->user()->company_id;
             $offer->title = $request['title'];
+            $offer->category_id = $request['category_id'];
             $offer->description = $request['description'];
             $offer->start_date = $request['start_date'];
             $offer->end_date = $request['end_date'];

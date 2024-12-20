@@ -6,7 +6,7 @@ use App\Company\Register;
 use App\Http\Middleware\Company\CheckCompanyPhoneVerificationAndApproved;
 use App\Http\Middleware\CustomVerifyCsrfToken;
 use Filament\Enums\ThemeMode;
-use Filament\Http\Middleware\Authenticate;
+use App\Admin\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;

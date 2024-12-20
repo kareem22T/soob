@@ -3,116 +3,238 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Phone;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use App\Services\ForJawalyService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    protected $forJawalyService;
-
-    public function __construct(ForJawalyService $forJawalyService)
+    public function register(Request $request)
     {
-        $this->forJawalyService = $forJawalyService;
-    }
-
-    // Send OTP to the user's phone
-    public function sendOtp(Request $request)
-    {
-        // Validate the phone number
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $phone = $request->phone;
-        $verificationCode = rand(1000, 9999);
-        $expirationTime = Carbon::now()->addMinutes(10);
-
-        // Check if the phone exists, then update or create a new phone record
-        $phoneRecord = Phone::updateOrCreate(
-            ['phone' => $phone],
-            [
-                'verification_code' => Hash::make($verificationCode),
-                'verified_at' => null,
-                'current_code_expired_at' => $expirationTime,
-            ]
-        );
-
-        Log::info("Sending OTP to {$phone} with code {$verificationCode}");
-
         try {
-            $result = $this->forJawalyService->sendSMS($phone, "Your account verification code is: {$verificationCode}");
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email',
+                'phone' => 'required|string|max:15|unique:users,phone',
+                'password' => 'required|string|min:8|confirmed',
+            ], [
+                'name.required' => 'اسم المستخدم مطلوب.',
+                'name.string' => 'اسم المستخدم يجب أن يكون نصاً.',
+                'name.max' => 'اسم المستخدم يجب ألا يزيد عن 255 حرفًا.',
 
-            if ($result['code'] === 200) {
+                'email.required' => 'البريد الإلكتروني مطلوب.',
+                'email.email' => 'يجب إدخال بريد إلكتروني صحيح.',
+                'email.max' => 'البريد الإلكتروني يجب ألا يزيد عن 255 حرفًا.',
+                'email.unique' => 'البريد الإلكتروني مستخدم بالفعل.',
+
+                'phone.required' => 'رقم الهاتف مطلوب.',
+                'phone.string' => 'رقم الهاتف يجب أن يكون نصاً.',
+                'phone.max' => 'رقم الهاتف يجب ألا يزيد عن 15 حرفًا.',
+                'phone.unique' => 'رقم الهاتف مستخدم بالفعل.',
+
+                'password.required' => 'كلمة المرور مطلوبة.',
+                'password.string' => 'كلمة المرور يجب أن تكون نصاً.',
+                'password.min' => 'كلمة المرور يجب ألا تقل عن 8 أحرف.',
+                'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
+            ]);
+
+            if ($validator->fails()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'OTP sent successfully',
-                    'phone' => $phone,
-                ], 200);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => $result['message'] ?? 'Error occurred while sending OTP',
-                ], 500);
+                    'status' => 'error',
+                    'errors' => [$validator->errors()->first()],
+                ], 422);
             }
-        } catch (\Exception $e) {
+
+            // Create user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'password' => Hash::make($request->password),
+                'is_phone_verified_for_web_registeration' => true, // Set phone verification as false initially
+            ]);
+
+            // Generate token
+            $token = $user->createToken('UserToken')->plainTextToken;
+            $user->is_phone_verified = $user->is_phone_verified_for_web_registeration;
+
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to send OTP. Please try again later.',
+                'status' => 'success',
+                'message' => 'تم التسجيل بنجاح',
+                'user' => $user,
+                'token' => $token,
+            ], 201);
+        } catch (\Throwable $th) {
+            Log::error("Error in User Registration: " . $th->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.'],
             ], 500);
         }
     }
 
-    // Verify the OTP sent to the user's phone
-    public function verifyOtp(Request $request)
+    public function sendOtp(Request $request)
     {
-        $request->validate([
-            'otp' => 'required|digits:6',
-            'phone' => 'required',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone' => 'required|string|max:15',
+            ], [
+                'phone.required' => 'رقم الهاتف مطلوب.',
+                'phone.string' => 'رقم الهاتف يجب أن يكون نصاً.',
+                'phone.max' => 'رقم الهاتف يجب ألا يزيد عن 15 حرفًا.',
+            ]);
 
-        $phoneRecord = Phone::where('phone', $request->phone)->first();
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => [$validator->errors()->first()],
+                ], 422);
+            }
 
-        if (!$phoneRecord) {
+            $user = User::where('phone', $request->phone)->first();
+            if ($user) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => ['رقم الهاتف مستخدم بالفعل.'],
+                ], 422);
+            }
+
+            $verificationCode = rand(1000, 9999);
+            $expirationTime = Carbon::now()->addMinutes(10);
+
+            Phone::updateOrCreate(
+                ['phone' => $request->phone],
+                [
+                    'verification_code' => Hash::make($verificationCode),
+                    'verified_at' => null,
+                    'current_code_expired_at' => $expirationTime,
+                ]
+            );
+
+            ForJawalyService::sendSMS($request->phone, "Your verification code is: {$verificationCode}");
+
             return response()->json([
-                'success' => false,
-                'message' => 'Phone number not found.',
-            ], 404);
-        }
-
-        if (Carbon::now()->greaterThan($phoneRecord->current_code_expired_at)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'OTP has expired. Please request a new one.',
-            ], 400);
-        }
-
-        if (Hash::check($request->otp, $phoneRecord->verification_code)) {
-            $phoneRecord->verified_at = now();
-            $phoneRecord->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Phone number verified successfully.',
-                'phone' => $phoneRecord->phone,
-                'isVerified' => true,
+                'status' => 'success',
+                'message' => 'تم إرسال رمز التحقق إلى هاتفك بنجاح.',
             ], 200);
-        } else {
+        } catch (\Throwable $th) {
+            Log::error("Error in sending OTP: " . $th->getMessage());
             return response()->json([
-                'success' => false,
-                'message' => 'Invalid OTP. Please try again.',
-            ], 400);
+                'status' => 'error',
+                'errors' => ['حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.'],
+            ], 500);
         }
     }
+
+    public function login(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'identifier' => 'required|string',
+                'password' => 'required|string',
+            ], [
+                'identifier.required' => 'البريد الإلكتروني أو رقم الهاتف مطلوب.',
+                'identifier.string' => 'يجب أن يكون البريد الإلكتروني أو رقم الهاتف نصاً.',
+                'password.required' => 'كلمة المرور مطلوبة.',
+                'password.string' => 'كلمة المرور يجب أن تكون نصاً.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => [$validator->errors()->first()],
+                ], 422);
+            }
+
+            // Determine if identifier is an email or phone
+            $identifier = $request->identifier;
+            $user = filter_var($identifier, FILTER_VALIDATE_EMAIL)
+                ? User::where('email', $identifier)->first()
+                : User::where('phone', $identifier)->first();
+
+                if (!$user || !Hash::check($request->password, $user->password)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => ['بيانات الاعتماد غير صحيحة.'],
+                    ], 401);
+                }
+
+            $token = $user->createToken('UserToken')->plainTextToken;
+            $user->is_phone_verified = $user->is_phone_verified_for_web_registeration;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم تسجيل الدخول بنجاح',
+                'token' => $token,
+                'user' => $user,
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::info($th);
+        }
+    }
+
+
+    public function verifyOtp(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone' => 'required|string|max:15',
+                'otp' => 'required|numeric',
+            ], [
+                'phone.required' => 'رقم الهاتف مطلوب.',
+                'otp.required' => 'رمز التحقق مطلوب.',
+                'otp.numeric' => 'رمز التحقق يجب أن يكون عدداً.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => [$validator->errors()->first()],
+                ], 422);
+            }
+
+            $phoneRecord = Phone::where('phone', $request->phone)->first();
+            if (!$phoneRecord || !Hash::check($request->otp, $phoneRecord->verification_code)) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => ['رمز التحقق غير صحيح.'],
+                ], 422);
+            }
+
+            $phoneRecord->update([
+                'verified_at' => Carbon::now(),
+            ]);
+
+            User::where('phone', $request->phone)->update(['is_phone_verified' => true]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم التحقق من رقم الهاتف بنجاح.',
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error("Error in verifying OTP: " . $th->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'errors' => ['حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.'],
+            ], 500);
+        }
+    }
+
+    public function getUser(Request $request)
+    {
+        $user = $request->user();
+        $user->is_phone_verified = $user->is_phone_verified_for_web_registeration;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم تحديث رقم الهاتف بنجاح',
+            'user' => $user,
+        ], 200);
+    }
+
 }

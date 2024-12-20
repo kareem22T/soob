@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\API\Company;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Validation\Rule;
 
-class CompanyRegistrationController extends Controller
+class RegistrationController extends Controller
 {
     public function register(Request $request)
     {
@@ -101,43 +101,45 @@ class CompanyRegistrationController extends Controller
                 'is_phone_verified' => true
             ]);
 
-                    // Define resources
-        $resources = ['booking', 'employee', 'offer', 'role', 'user_custom_request'];
+            // Define resources
+            $resources = ['booking', 'employee', 'offer', 'role', 'user_custom_request'];
 
-        // Permissions to generate for each resource
-        $permissionActions = [
-            'view_any',
-            'view',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-            'restore',
-            'restore_any',
-            'replicate',
-            'reorder',
-        ];
+            // Permissions to generate for each resource
+            $permissionActions = [
+                'view_any',
+                'view',
+                'create',
+                'update',
+                'delete',
+                'delete_any',
+                'force_delete',
+                'force_delete_any',
+                'restore',
+                'restore_any',
+                'replicate',
+                'reorder',
+            ];
 
-        // Create roles and permissions for each resource
-        foreach ($resources as $resource) {
-            // Create a role for the resource
-            $roleName = ucfirst($resource) . ' Manager';
-            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'employee']);
+            // Create roles and permissions for each resource
+            $roles = []; // Array to store all roles
+            foreach ($resources as $resource) {
+                // Create a role for the resource
+                $roleName = ucfirst($resource) . ' Manager';
+                $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'employee']);
+                $roles[] = $role->name; // Store role name
 
-            // Create permissions for the resource
-            foreach ($permissionActions as $action) {
-                $permissionName = "{$action}_{$resource}";
-                $permission = Permission::updateOrCreate(['name' => $permissionName, 'guard_name' => 'employee']);
+                // Create permissions for the resource
+                foreach ($permissionActions as $action) {
+                    $permissionName = "{$action}_{$resource}";
+                    $permission = Permission::updateOrCreate(['name' => $permissionName, 'guard_name' => 'employee']);
 
-                // Assign permissions to the role
-                $role->givePermissionTo($permission);
+                    // Assign permissions to the role
+                    $role->givePermissionTo($permission);
+                }
             }
 
-            // Assign the role to the employee
-            $employee->assignRole($role);
-        }
+            // Assign all roles to the employee at once
+            $employee->assignRole($roles);
 
             $employee->is_approved = $company->is_approved;
 
@@ -306,7 +308,7 @@ class CompanyRegistrationController extends Controller
                 ]
             );
 
-                // Send OTP via SMS
+            // Send OTP via SMS
             $result = ForJawalyService::sendSMS($request->phone, "Your Soob account verification code is: {$verificationCode}");
 
             if ($result['code'] === 200) {
@@ -322,7 +324,6 @@ class CompanyRegistrationController extends Controller
                 'status' => 'error',
                 'errors' => ['فشل في إرسال رمز التحقق. يرجى المحاولة لاحقًا.'],
             ], 500);
-
         } catch (\Exception $e) {
             Log::error("Error in sendOtp: " . $e->getMessage());
             return response()->json([
@@ -404,7 +405,6 @@ class CompanyRegistrationController extends Controller
                 'token' => $token,
                 'message' => 'تم التحقق بنجاح.',
             ], 200);
-
         } catch (\Exception $e) {
             Log::error("Error in verifyOtp: " . $e->getMessage());
             return response()->json([
@@ -414,7 +414,8 @@ class CompanyRegistrationController extends Controller
         }
     }
 
-    public function getUser(Request $request) {
+    public function getUser(Request $request)
+    {
         $employee = $request->user();
         $company = Company::find($employee->company_id);
         $employee->is_approved = $company->is_approved;
@@ -427,53 +428,51 @@ class CompanyRegistrationController extends Controller
     }
 
     public function resetPassword(Request $request)
-{
-    try {
-        // Validate the request input
-        $validator = Validator::make($request->all(), [
-            'password' => 'required|string|min:8|confirmed',
-        ], [
-            'phone.required' => 'رقم الهاتف مطلوب.',
-            'phone.string' => 'رقم الهاتف يجب أن يكون نصاً.',
-            'phone.max' => 'رقم الهاتف يجب ألا يزيد عن 15 حرفًا.',
-            'phone.exists' => 'رقم الهاتف غير موجود في السجلات.',
+    {
+        try {
+            // Validate the request input
+            $validator = Validator::make($request->all(), [
+                'password' => 'required|string|min:8|confirmed',
+            ], [
+                'phone.required' => 'رقم الهاتف مطلوب.',
+                'phone.string' => 'رقم الهاتف يجب أن يكون نصاً.',
+                'phone.max' => 'رقم الهاتف يجب ألا يزيد عن 15 حرفًا.',
+                'phone.exists' => 'رقم الهاتف غير موجود في السجلات.',
 
-            'otp.required' => 'رمز التحقق مطلوب.',
-            'otp.integer' => 'رمز التحقق يجب أن يكون رقمًا صحيحًا.',
+                'otp.required' => 'رمز التحقق مطلوب.',
+                'otp.integer' => 'رمز التحقق يجب أن يكون رقمًا صحيحًا.',
 
-            'password.required' => 'كلمة المرور مطلوبة.',
-            'password.string' => 'كلمة المرور يجب أن تكون نصاً.',
-            'password.min' => 'كلمة المرور يجب ألا تقل عن 8 أحرف.',
-            'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
-        ]);
+                'password.required' => 'كلمة المرور مطلوبة.',
+                'password.string' => 'كلمة المرور يجب أن تكون نصاً.',
+                'password.min' => 'كلمة المرور يجب ألا تقل عن 8 أحرف.',
+                'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
+            ]);
 
-        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => [$validator->errors()->first()],
+                ], 422);
+            }
+
+            // Fetch the employee by phone number
+            $employee = $request->user();
+
+            // Update the employee's password
+            $employee->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم إعادة تعيين كلمة المرور بنجاح.',
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error('Error in resetPassword: ' . $th->getMessage());
             return response()->json([
                 'status' => 'error',
-                'errors' => [$validator->errors()->first()],
-            ], 422);
+                'message' => 'حدث خطأ أثناء إعادة تعيين كلمة المرور.',
+            ], 500);
         }
-
-        // Fetch the employee by phone number
-        $employee = $request->user();
-
-        // Update the employee's password
-        $employee->update([
-            'password' => Hash::make($request->password),
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'تم إعادة تعيين كلمة المرور بنجاح.',
-        ], 200);
-
-    } catch (\Throwable $th) {
-        Log::error('Error in resetPassword: ' . $th->getMessage());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'حدث خطأ أثناء إعادة تعيين كلمة المرور.',
-        ], 500);
     }
-}
-
 }

@@ -10,6 +10,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -36,6 +37,13 @@ class OfferResource extends Resource
             ->default(Auth::id()) // Set the default value to the authenticated user's ID
             ->required(),
             TextInput::make('title')->required(),
+            Select::make('category_id')
+            ->placeholder('Select category')
+            ->label('Category')
+            ->options(function () {
+                return \App\Models\Category::pluck('name', 'id');
+            })
+            ->required(),
             Textarea::make('description')->required(),
             DateTimePicker::make('start_date')->required(),
             DateTimePicker::make('end_date')->required(),
@@ -81,6 +89,8 @@ class OfferResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('title')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('category.name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('start_date')
                     ->dateTime()

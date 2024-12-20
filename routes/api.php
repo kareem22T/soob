@@ -3,13 +3,15 @@
 use App\Events\MyEvent;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\Company\RequestsController;
-use App\Http\Controllers\API\CompanyRegistrationController;
+use App\Http\Controllers\API\Company\RegistrationController as CompanyRegistrationController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\OfferController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserCustomeRequestController;
+use App\Http\Controllers\API\UserSettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Orion\Facades\Orion;
@@ -54,10 +56,12 @@ Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
 
 // User registration route
-Route::post('/register', [UserController::class, 'userRegister']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // User login route
-Route::post('/login', [UserController::class, 'userLogin']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/user', [AuthController::class, 'getUser'])->middleware('auth:sanctum');
 
 // User logout route
 Route::middleware('auth:sanctum')->post('/logout', [UserController::class, 'userLogout']);
@@ -77,6 +81,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/offers', [OfferController::class, 'getOffers']); // Retrieve bookings for the authenticated user
+Route::get('/categories', [CategoryController::class, 'getCategories']); // Retrieve bookings for the authenticated user
 Route::get('/getNotification', [NotificationController::class, 'getNotification'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
 Route::get('/readAll', [NotificationController::class, 'readAll'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
 Route::get('/company-offers', [OfferController::class, 'getOffers'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
+Route::get('/get-user-setting', [UserSettingController::class, 'getUserSettings']);
