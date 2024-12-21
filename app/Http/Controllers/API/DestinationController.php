@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class DestinationController extends Controller
 {
     public function getDestinations(Request $request) {
-        $destinatins = \App\Models\Category::all();
+        $destinatins = \App\Models\Destination::all();
 
         foreach ($destinatins as $destinatin) {
             $destinatin->thumbnail = asset('storage/' . $destinatin->thumbnail);
