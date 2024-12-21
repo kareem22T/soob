@@ -28,6 +28,7 @@ class RegistrationController extends Controller
                 'company_phone' => 'required|string|max:15|unique:companies,phone',
                 'company_email' => 'required|email|max:255|unique:companies,email',
                 'license' => 'required|file|mimes:jpg,png,pdf|max:2048',
+                'logo' => 'required|file|mimes:jpg,png,pdf|max:2048',
                 'member_name' => 'required|string|max:255',
                 'member_email' => 'required|email|max:255|unique:employees,email',
                 'member_phone' => 'required|string|max:15|unique:employees,phone',
@@ -82,12 +83,16 @@ class RegistrationController extends Controller
             // Store company license
             $licensePath = $request->file('license')->store('company-licenses', 'public');
 
+            // Store company logo
+            $logoPath = $request->file('logo')->store('company-logo', 'public');
+
             // Create company
             $company = Company::create([
                 'name' => $request->company_name,
                 'phone' => $request->company_phone,
                 'email' => $request->company_email,
                 'license' => $licensePath,
+                'logo' => $logoPath,
             ]);
 
             // Create employee

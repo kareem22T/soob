@@ -22,6 +22,7 @@ class Company extends Authenticatable
         'email',
         'phone',
         'license',
+        'logo',
         'is_approved',
     ];
     public function employees()
