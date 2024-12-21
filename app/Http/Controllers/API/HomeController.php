@@ -10,7 +10,6 @@ class HomeController extends Controller
     public function index() {
         $settings = \App\Models\UserSetting::first();
         $settings->company_ad_thumbnail = asset('storage/' . $settings->company_ad_thumbnail);
-        $settings->custom_ad = asset('storage/' . $settings->custom_ad);
 
         $categories = \App\Models\Category::all();
         foreach ($categories as $cat) {
