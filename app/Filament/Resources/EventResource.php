@@ -25,8 +25,7 @@ class EventResource extends Resource
         return $form
             ->schema([
                 Forms\Components\FileUpload::make('banner')
-                    ->required()
-                    ->maxLength(255),
+                    ->required(),
                 Forms\Components\TextInput::make('link')
                     ->required()
                     ->maxLength(255),
