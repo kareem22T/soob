@@ -7,6 +7,7 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\Company\RequestsController;
 use App\Http\Controllers\API\Company\RegistrationController as CompanyRegistrationController;
+use App\Http\Controllers\API\DestinationController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\OfferController;
 use App\Http\Controllers\API\UserController;
@@ -82,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/offers', [OfferController::class, 'getOffers']); // Retrieve bookings for the authenticated user
 Route::get('/categories', [CategoryController::class, 'getCategories']); // Retrieve bookings for the authenticated user
+Route::get('/destinations', [DestinationController::class, 'getDestinations']); // Retrieve bookings for the authenticated user
 Route::get('/getNotification', [NotificationController::class, 'getNotification'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
 Route::get('/readAll', [NotificationController::class, 'readAll'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
 Route::get('/company-offers', [OfferController::class, 'getOffers'])->middleware('auth:sanctum'); // Retrieve bookings for the authenticated user
