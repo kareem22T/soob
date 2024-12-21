@@ -22,11 +22,17 @@ class HomeController extends Controller
             $destinatin->cover = asset('storage/' . $destinatin->cover);
         }
 
+        $events = \App\Models\Event::all();
+        foreach ($events as $event) {
+            $event->banner = asset('storage/' . $event->banner);
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Fetched successfuly',
             'categories' => $categories,
             'destinations' => $destinatins,
+            'events' => $events,
         ], 200);
     }
 }
