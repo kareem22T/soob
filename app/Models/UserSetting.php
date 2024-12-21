@@ -12,6 +12,8 @@ class UserSetting extends Model
         'company_ad_description',
         'company_ad_action_btn',
         'company_id',
+        'custom_ad',
+        'show_custome_ad',
     ];
 
     public function company()

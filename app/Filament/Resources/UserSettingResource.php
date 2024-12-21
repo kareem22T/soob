@@ -45,6 +45,10 @@ class UserSettingResource extends Resource
                     ->required(),
                 Forms\Components\Toggle::make('toggle_company_ad_section')
                     ->required(),
+                Forms\Components\FileUpload::make('custom_ad')
+                    ->required(),
+                Forms\Components\Toggle::make('show_custome_ad')
+                    ->required(),
 
             ]);
     }
