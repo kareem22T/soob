@@ -27,12 +27,19 @@ class HomeController extends Controller
             $event->banner = asset('storage/' . $event->banner);
         }
 
+        $companies = \App\Models\Company::where('is_approved', true)->get();
+        foreach ($companies as $company) {
+            if ($company->logo)
+                $company->logo = asset('storage/' . $company->logo);
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Fetched successfuly',
             'categories' => $categories,
             'destinations' => $destinatins,
             'events' => $events,
+            'companies' => $companies,
         ], 200);
     }
 }
