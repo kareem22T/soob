@@ -3,7 +3,7 @@
 use App\Events\MyEvent;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
-use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\Company\RequestsController;
 use App\Http\Controllers\API\Company\RegistrationController as CompanyRegistrationController;
