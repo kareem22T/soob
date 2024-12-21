@@ -10,6 +10,10 @@ class CategoryController extends Controller
     public function getCategories(Request $request) {
         $categories = \App\Models\Category::all();
 
+        foreach ($categories as $cat) {
+            $cat->icon = asset('storage/' . $cat->icon);
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Fetched successfuly',
