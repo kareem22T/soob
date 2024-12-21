@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Offer extends Model
 {
-    protected $fillable = ['title', 'description', 'images', 'company_id','category_id', 'start_date', 'end_date', 'status'];
+    protected $fillable = ['title', 'description', 'is_suggested', 'images', 'company_id','category_id', 'start_date', 'end_date', 'status'];
 
     protected $casts = ['images'=> 'array'];
 

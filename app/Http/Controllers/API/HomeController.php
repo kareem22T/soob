@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Offer;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -33,6 +34,8 @@ class HomeController extends Controller
                 $company->logo = asset('storage/' . $company->logo);
         }
 
+        $offers = Offer::latest()->where('status', 'Approved')->where('is_suggested', true)->get();
+
         return response()->json([
             'status' => 'success',
             'message' => 'Fetched successfuly',
@@ -40,6 +43,7 @@ class HomeController extends Controller
             'destinations' => $destinatins,
             'events' => $events,
             'companies' => $companies,
+            'offers' => $offers,
         ], 200);
     }
 }

@@ -107,7 +107,9 @@ class OfferResource extends Resource
                         'Approved' => 'Approved',
                         'Rejected' => 'Rejected',
                     ]),
-
+                Tables\Columns\ToggleColumn::make('is_suggested')
+                    ->label('Suggest')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
