@@ -82,6 +82,7 @@ public function getOffers(Request $request)
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'category_id' => 'required',
+                'destination_id' => 'nullable',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'images' => 'required|array',
@@ -94,6 +95,7 @@ public function getOffers(Request $request)
                 'packages.*.discounted_price' => 'nullable|numeric',
             ], [
                 'title.required' => 'عنوان العرض مطلوب.',
+                'category_id.required' => 'تصنيف العرض مطلوب.',
                 'title.string' => 'عنوان العرض يجب أن يكون نصاً.',
                 'title.max' => 'عنوان العرض يجب ألا يتجاوز 255 حرفاً.',
                 'description.required' => 'الوصف مطلوب.',

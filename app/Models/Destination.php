@@ -8,6 +8,7 @@ class Destination extends Model
 {
     protected $fillable = [
         'name',
+        'destination_id',
         'thumbnail',
         'cover'
     ];
