@@ -18,7 +18,7 @@ class DestinationController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Fetched successfuly',
-            'categories' => $destinatins,
+            'destinations' => $destinatins,
         ], 200);
     }
 }
