@@ -136,6 +136,7 @@ public function getOffers(Request $request)
             $offer->company_id = $request->user()->company_id;
             $offer->title = $request['title'];
             $offer->category_id = $request['category_id'];
+            $offer->destination_id = $request['destination_id'] ?? null;
             $offer->description = $request['description'];
             $offer->start_date = $request['start_date'];
             $offer->end_date = $request['end_date'];
